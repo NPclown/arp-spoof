@@ -26,6 +26,18 @@ typedef struct EthIcmpPacket final {
 	IpHdr ip_;
 	IcmpHdr icmp_;
 }EthIcmpPacket;
+
+typedef struct Info {
+	Ip attacker_ip;
+	Ip sender_ip;
+	Ip target_ip;
+	Mac attacker_mac;
+	Mac sender_mac;
+	Mac target_mac;
+	char * interface;
+	char * sender;
+	char * target;
+}Info;
 #pragma pack(pop)
 
 typedef struct {
